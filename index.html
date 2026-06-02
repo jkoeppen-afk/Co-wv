@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two States, One Big Gap: Colorado vs. West Virginia Electric Bills — Why?</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&family=Source+Code+Pro:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:     #1F4E79;
+    --blue:     #2E75B6;
+    --blue-lt:  #D6E4F0;
+    --red:      #C00000;
+    --red-lt:   #FCE4D6;
+    --green:    #1E6B3C;
+    --green-lt: #E2EFDA;
+    --amber:    #C55A11;
+    --amber-lt: #FFF3CD;
+    --grey-dk:  #333333;
+    --grey-md:  #767676;
+    --grey-lt:  #F5F5F5;
+    --rule:     #CCCCCC;
+    --white:    #ffffff;
+    --page-bg:  #EAEAEA;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--page-bg);
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--grey-dk);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* PAGE WRAPPER */
+  .page {
+    background: var(--white);
+    max-width: 820px;
+    margin: 32px auto;
+    padding: 72px 72px 80px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.12);
+  }
+  @media (max-width: 680px) {
+    .page { margin: 0; padding: 32px 22px 48px; box-shadow: none; }
+  }
+
+  /* LABEL */
+  .label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey-md);
+    margin-bottom: 6px;
+    margin-top: 20px;
+  }
+
+  /* TITLE BLOCK */
+  .report-title {
+    font-family: 'Merriweather', serif;
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .report-sub {
+    font-size: 13px;
+    color: var(--grey-md);
+    font-style: italic;
+    margin-bottom: 18px;
+    line-height: 1.55;
+  }
+  .rule-thick { border: none; border-top: 2.5px solid var(--navy); margin: 6px 0; }
+  .rule-thin  { border: none; border-top: 0.75px solid var(--blue); margin: 4px 0 10px; }
+
+  /* SECTION HEADERS */
+  .section-head {
+    margin-top: 28px;
+    margin-bottom: 2px;
+  }
+  .section-head h2 {
+    font-family: 'Merriweather', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+
+  h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue);
+    margin: 14px 0 5px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  p { margin-bottom: 8px; font-size: 13px; line-height: 1.65; }
+
+  /* TABLES */
+  .tbl-wrap { overflow-x: auto; margin: 8px 0 14px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  thead tr { background: var(--navy); color: var(--white); }
+  thead th {
+    padding: 9px 11px;
+    font-weight: 700;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.2px;
+  }
+  tbody tr:nth-child(odd)  { background: var(--white); }
+  tbody tr:nth-child(even) { background: var(--grey-lt); }
+  tbody td {
+    padding: 8px 11px;
+    border: 0.4px solid var(--rule);
+    vertical-align: middle;
+    line-height: 1.45;
+  }
+  .col-factor { background: var(--blue-lt) !important; font-weight: 700; color: var(--navy); }
+  .col-wv     { color: var(--red);   font-weight: 700; background: var(--red-lt) !important; }
+  .col-co     { color: var(--green); font-weight: 700; background: var(--green-lt) !important; }
+  .col-center { text-align: center; }
+
+  /* BAR CHARTS */
+  .bar-chart { margin: 4px 0 16px; }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 9px;
+    gap: 0;
+  }
+  .bar-lbl {
+    font-size: 11.5px;
+    color: var(--grey-dk);
+    min-width: 150px;
+    flex-shrink: 0;
+    padding-right: 10px;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .bar-track {
+    flex: 1;
+    height: 22px;
+    background: #E8E8E8;
+    border-radius: 3px;
+    overflow: visible;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    font-family: 'Source Code Pro', monospace;
+    width: 0;
+    transition: width 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    min-width: 4px;
+  }
+  .bar-fill.outside-label { overflow: visible; }
+  .bar-fill.outside-label::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 6px);
+    color: var(--grey-dk);
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .fill-wv  { background: linear-gradient(90deg, #C00000, #e53935); }
+  .fill-nat { background: linear-gradient(90deg, #5B5EA6, #7986cb); }
+  .fill-co  { background: linear-gradient(90deg, #1E6B3C, #2e7d52); }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-radius: 3px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .callout.blue  { background: var(--blue-lt);  border-left: 4px solid var(--blue); }
+  .callout.amber { background: var(--amber-lt); border-left: 4px solid var(--amber); }
+  .callout p { margin: 0; }
+
+  /* REASONS */
+  .reason { margin-bottom: 14px; }
+  .reason h3 { margin-bottom: 4px; }
+  .reason p  { margin: 0; }
+
+  /* FOOTER */
+  .footer-rule { border: none; border-top: 0.5px solid var(--grey-md); margin: 28px 0 8px; }
+  .footer-text {
+    font-size: 9.5px;
+    color: var(--grey-md);
+    font-style: italic;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TITLE -->
+  <div class="label">Energy Policy · 2026</div>
+  <h1 class="report-title">Two States, One Big Gap:<br>Colorado vs. West Virginia Electric Bills — Why?</h1>
+  <p class="report-sub">Same country. Same national grid pressures. But West Virginia's bills have risen nearly three times faster than Colorado's over the past decade. Here's why.</p>
+  <hr class="rule-thick">
+  <hr class="rule-thin">
+
+  <!-- KEY STATS -->
+  <div class="label" style="margin-top:16px;">The Numbers at a Glance</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th></th><th style="color:#ffcdd2;">West Virginia</th><th style="color:#c8e6c9;">Colorado</th></tr></thead>
+      <tbody>
+        <tr><td class="col-factor">Avg monthly bill (2025)</td><td class="col-wv col-center">$165</td><td class="col-co col-center">$110</td></tr>
+        <tr><td class="col-factor">Bill increase 2015–2025</td><td class="col-wv col-center">73%</td><td class="col-co col-center">30%</td></tr>
+        <tr><td class="col-factor">Rate growth since 2001</td><td class="col-wv col-center">146% (top 5 fastest)</td><td class="col-co col-center">Below national avg</td></tr>
+        <tr><td class="col-factor">Share of electricity from coal</td><td class="col-wv col-center">87%</td><td class="col-co col-center">30%</td></tr>
+        <tr><td class="col-factor">Share from renewables</td><td class="col-wv col-center">4%</td><td class="col-co col-center">37%</td></tr>
+        <tr><td class="col-factor">Population trend</td><td class="col-wv col-center">Shrinking</td><td class="col-co col-center">Growing</td></tr>
+        <tr><td class="col-factor">Bill as % of median income</td><td class="col-wv col-center">3% (and rising)</td><td class="col-co col-center">2%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RATE GROWTH CHART -->
+  <div class="section-head">
+    <hr class="rule-thick">
+    <h2>How Fast Have Bills Risen?</h2>
+    <hr class="rule-thin">
+  </div>
+
+  <div class="label">Electricity rate increase since 2001</div>
+  <div class="bar-chart" id="chart1">
+    <div class="bar-row"><div class="bar-lbl">West Virginia</div><div class="bar-track"><div class="bar-fill fill-wv" data-w="90" data-label="" >146%</div></div></div>
+    <div class="bar-row"><div class="bar-lbl">National Average</div><div class="bar-track"><div class="bar-fill fill-nat" data-w="62" data-label="">102%</div></div></div>
+    <div class="bar-row"><div class="bar-lbl">Colorado</div><div class="bar-track"><div class="bar-fill fill-co" data-w="42" data-label="">Below avg</div></div></div>
+  </div>
+
+  <div class="label">Household bill increase 2015–2025</div>
+  <div class="bar-chart" id="chart2">
+    <div class="bar-row"><div class="bar-lbl">West Virginia</div><div class="bar-track"><div class="bar-fill fill-wv" data-w="73" data-label="">73%</div></div></div>
+    <div class="bar-row"><div class="bar-lbl">National Average</div><div class="bar-track"><div class="bar-fill fill-nat" data-w="40" data-label="">40%</div></div></div>
+    <div class="bar-row"><div class="bar-lbl">Colorado</div><div class="bar-track"><div class="bar-fill fill-co" data-w="30" data-label="">30%</div></div></div>
+  </div>
+
+  <!-- ENERGY MIX -->
+  <div class="section-head">
+    <hr class="rule-thick">
+    <h2>What Powers Each State?</h2>
+    <hr class="rule-thin">
+  </div>
+  <p>The biggest single driver of the cost gap is what each state burns to make electricity.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Energy Source</th><th style="color:#c8e6c9;">Colorado</th><th style="color:#ffcdd2;">West Virginia</th></tr></thead>
+      <tbody>
+        <tr><td class="col-factor">Coal</td><td class="col-co col-center">30%</td><td class="col-wv col-center">87% ← primary cost driver</td></tr>
+        <tr><td class="col-factor">Natural Gas</td><td class="col-center">29%</td><td class="col-center">6%</td></tr>
+        <tr><td class="col-factor">Wind</td><td class="col-co col-center">26%</td><td class="col-center">3.7%</td></tr>
+        <tr><td class="col-factor">Solar</td><td class="col-center">9%</td><td class="col-center">0.5%</td></tr>
+        <tr><td class="col-factor">Hydro</td><td class="col-center">2%</td><td class="col-center">2.4%</td></tr>
+        <tr><td class="col-factor">Other</td><td class="col-center">4%</td><td class="col-center">0.3%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout blue">
+    <p>💡 <strong>Key insight:</strong> Once a wind turbine or solar farm is built, the "fuel" is free forever. Coal plants must keep buying fuel indefinitely — and the older and less efficient the plant, the more expensive that fuel cost becomes per unit of electricity.</p>
+  </div>
+
+  <!-- 5 REASONS -->
+  <div class="section-head">
+    <hr class="rule-thick">
+    <h2>5 Reasons West Virginia Was Left Behind</h2>
+    <hr class="rule-thin">
+  </div>
+
+  <div class="reason">
+    <h3>1. &nbsp;No Renewable Buffer Against Price Swings</h3>
+    <p>Colorado built enough wind and solar that when fossil fuel prices spiked nationally, renewables absorbed demand and softened the blow. With only 4% renewables, WV had no cushion — every gas and coal price shock hit ratepayers directly and in full.</p>
+  </div>
+
+  <div class="reason">
+    <h3>2. &nbsp;An Ancient Coal Fleet That Customers Are Paying to Keep Alive</h3>
+    <p>West Virginia's coal fleet is mostly 50+ years old. Rather than retiring these plants, the Public Service Commission allowed utilities to charge customers hundreds of millions in compliance upgrades to keep them running potentially until 2040. New wind, solar, and battery storage would be significantly cheaper.</p>
+  </div>
+
+  <div class="reason">
+    <h3>3. &nbsp;Trapped on the PJM Grid With No Leverage</h3>
+    <p>Colorado is on the Western grid (WECC) and avoided PJM's catastrophic capacity auction spikes entirely. West Virginia is fully embedded in PJM — so when PJM's wholesale prices jumped 833% in a single year, WV utilities had to pass every dollar of that cost directly to customers who had no alternatives.</p>
+  </div>
+
+  <div class="reason">
+    <h3>4. &nbsp;Shrinking Population — the Hidden Cost Multiplier</h3>
+    <p>When people leave a state, the same fixed infrastructure costs — power lines, substations, aging plants — get divided among fewer ratepayers. Each remaining customer absorbs a larger share of a system built for a much bigger population. WV is the only state where median inflation-adjusted household income was lower in 2023 than in 1970.</p>
+  </div>
+
+  <div class="reason">
+    <h3>5. &nbsp;Regulatory Capture</h3>
+    <p>West Virginia's rate-approval commission — the body that approves all utility rate hikes — includes a former power company lobbyist and the former head of the state coal association, both appointed by the governor. Critics argue this makes meaningful cost oversight nearly impossible, and utilities routinely receive the rate increases they request.</p>
+  </div>
+
+  <!-- BOTTOM LINE -->
+  <div class="section-head">
+    <hr class="rule-thick">
+    <h2>The Bottom Line</h2>
+    <hr class="rule-thin">
+  </div>
+  <p>West Virginia sits on top of enormous natural gas reserves but uses gas for only 6% of its electricity. It imports expensive power through PJM, pays to keep 50-year-old coal plants alive, and has a regulatory board stacked with former industry insiders — while states that moved to cheaper generation years ago pay significantly less.</p>
+
+  <p>Colorado's renewable investment shows the better path: states that replaced aging coal with cheaper modern generation are now paying less — not more. The market has delivered its verdict. The question for West Virginia is how long the political will to ignore it can last.</p>
+
+  <!-- FOOTER -->
+  <hr class="footer-rule">
+  <p class="footer-text">Sources: IEA Global Energy Review 2026 · U.S. Energy Information Administration · PBS NewsHour · Ohio River Valley Institute · West Virginia Public Broadcasting · Colorado Public Radio · Conservation Colorado · PowerLines 2025</p>
+
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.bar-fill[data-w]').forEach(el => {
+          setTimeout(() => { el.style.width = el.dataset.w + '%'; }, 100);
+        });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.bar-chart').forEach(c => observer.observe(c));
+
+  // Trigger immediately if already in view
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.bar-fill[data-w]').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        setTimeout(() => { el.style.width = el.dataset.w + '%'; }, 200);
+      }
+    });
+  });
+</script>
+</body>
+</html>
